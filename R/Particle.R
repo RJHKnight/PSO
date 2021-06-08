@@ -7,7 +7,23 @@ pso <- function(value_function, num_dimensions,
                 w_damping = TRUE,
                 return_full = FALSE)
 {
-  initial_particles <- get_initial_particles(min_value, max_value, num_dimensions, swarm_size, value_function)
+
+  particles <- get_initial_particles(min_value, max_value, num_dimensions, swarm_size, value_function)
+  global_best <- calc_global_values(particles)
+  w <- 1
+
+  for (i in 1:num_iterations)
+  {
+    particles <- update(particles, global_best, value_function, w, 2, 2)
+    global_best <- calc_global_values(particles)
+
+    if (w_damping)
+    {
+      w <- w * 0.99
+    }
+  }
+
+  return (global_best)
 }
 
 
@@ -33,7 +49,7 @@ get_initial_particles <- function(min_value, max_value, num_dimensions, swarm_si
 
 
 # Apply the value function to get the result of the current cost. If this cost is better than
-# the particles previous best, update the best columns.
+# the previous best, update the best columns.
 calculate_cost_and_update <- function(positions, value_function)
 {
   current_cost <- positions %>%
@@ -49,4 +65,36 @@ calculate_cost_and_update <- function(positions, value_function)
       ) %>%
       select(-current_cost)
   )
+}
+
+calc_global_values <- function(particles)
+{
+  particles %>%
+    filter(best_cost == min(best_cost)) %>%
+    select(dimension, best_position, best_cost) %>%
+    rename(global_best_position = best_position,
+           global_best_cost = best_cost)
+}
+
+
+update <- function(particles, global_best, value_function, w, c1, c2)
+{
+  particles <- particles %>%
+    # Add global best
+    left_join(global_best, by = "dimension") %>%
+    # Prepare the random numbers
+    mutate(r1 = runif(n()), r2 = runif(n())) %>%
+    # Calculate the new velocity
+    mutate(
+      velocity = w * velocity +                        # Inertia
+        c1 * r1 * (best_position - position) +         # Personal Best
+        c2 * r2 * (global_best_position - position)    # Social Best
+    ) %>%
+    mutate(position = position + velocity) %>%
+    select(-contains("global")) %>%
+    mutate(iteration = iteration + 1)
+
+  particles <- calculate_cost_and_update(particles, value_function)
+
+  return (particles)
 }
