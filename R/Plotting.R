@@ -1,5 +1,6 @@
-# Only for 2d optimisations.
+# Only for 2d optimization.
 #' @import ggplot2
+#' @export
 plot_pso <- function(value_function, min_value, max_value, full_results)
 {
 
@@ -20,6 +21,7 @@ plot_pso <- function(value_function, min_value, max_value, full_results)
     scale_y_continuous(limits = c(min_value, max_value)) +
     geom_point(data = points, aes(dimension_1 , dimension_2)) +
     transition_states(iteration,
-                      transition_length = 2,
-                      state_length = 1)
+                      transition_length = 3,
+                      state_length = 1) +
+    theme_bw()
 }
