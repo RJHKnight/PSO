@@ -1,5 +1,6 @@
 
 #' @import dplyr
+#' @export
 pso <- function(value_function, num_dimensions,
                 min_value, max_value,
                 num_iterations = 100,
@@ -12,6 +13,11 @@ pso <- function(value_function, num_dimensions,
   global_best <- calc_global_values(particles)
   w <- 1
 
+  if (return_full)
+  {
+    all_values <- particles
+  }
+
   for (i in 1:num_iterations)
   {
     particles <- update(particles, global_best, value_function, w, 2, 2)
@@ -21,7 +27,17 @@ pso <- function(value_function, num_dimensions,
     {
       w <- w * 0.99
     }
+
+    if (return_full)
+    {
+      all_values <- rbind(all_values, particles)
+    }
+
+    cat(paste("Iteration", i, "global_best_cost:", format(global_best$global_best_cost[1]), "\n"))
   }
+
+  if (return_full)
+    return (all_values)
 
   return (global_best)
 }
@@ -91,7 +107,7 @@ update <- function(particles, global_best, value_function, w, c1, c2)
         c2 * r2 * (global_best_position - position)    # Social Best
     ) %>%
     mutate(position = position + velocity) %>%
-    select(-contains("global")) %>%
+    select(-contains("global"), -r1, -r2) %>%
     mutate(iteration = iteration + 1)
 
   particles <- calculate_cost_and_update(particles, value_function)
