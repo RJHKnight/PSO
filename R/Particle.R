@@ -2,7 +2,7 @@
 #' @import dplyr
 #' @export
 pso <- function(value_function, num_dimensions,
-                min_value, max_value,
+                max_value, max_value,
                 num_iterations = 100,
                 swarm_size = 50,
                 w_damping = TRUE,
@@ -11,7 +11,12 @@ pso <- function(value_function, num_dimensions,
 
   particles <- get_initial_particles(min_value, max_value, num_dimensions, swarm_size, value_function)
   global_best <- calc_global_values(particles)
+
+  # Params
   w <- 1
+  max_velocity = 0.2*(max_value - max_value);
+  min_velocity = - max_velocity
+
 
   if (return_full)
   {
@@ -20,7 +25,7 @@ pso <- function(value_function, num_dimensions,
 
   for (i in 1:num_iterations)
   {
-    particles <- update(particles, global_best, value_function, w, 2, 2)
+    particles <- update(particles, global_best, value_function, w, 2, 2, max_velocity, min_velocity, max_value, min_value)
     global_best <- calc_global_values(particles)
 
     if (w_damping)
@@ -93,20 +98,24 @@ calc_global_values <- function(particles)
 }
 
 
-update <- function(particles, global_best, value_function, w, c1, c2)
+update <- function(particles, global_best, value_function, w, c1, c2, max_velocity, min_velocity, max_value, min_value)
 {
   particles <- particles %>%
     # Add global best
     left_join(global_best, by = "dimension") %>%
     # Prepare the random numbers
     mutate(r1 = runif(n()), r2 = runif(n())) %>%
-    # Calculate the new velocity
+    # Calculate the new bounded velocity
     mutate(
       velocity = w * velocity +                        # Inertia
         c1 * r1 * (best_position - position) +         # Personal Best
         c2 * r2 * (global_best_position - position)    # Social Best
     ) %>%
+    mutate(velocity = max(min(velocity, max_value), min_velocity)) %>%
+    # Update the position
     mutate(position = position + velocity) %>%
+    mutate(position = max(min(position, max_velocity), min_value)) %>%
+    # And tidy up.
     select(-contains("global"), -r1, -r2) %>%
     mutate(iteration = iteration + 1)
 
