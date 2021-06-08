@@ -1,0 +1,15 @@
+Package: PSO
+Type: Package
+Title: Particle Swarm Optimisation
+Version: 0.1.0
+Author: Richard Knight
+Maintainer: Richard Knight <rjhknight@gmail.com>
+Description: Basic Implementation of Particle Swarm Optimisation. 
+    This is really just written for my education, it is in no way optimal or comprehensive.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
+Imports: 
+    tibble,
+    dplyr
