@@ -2,7 +2,7 @@
 #' @import dplyr
 #' @export
 pso <- function(value_function, num_dimensions,
-                max_value, max_value,
+                min_value, max_value,
                 num_iterations = 100,
                 swarm_size = 50,
                 w_damping = TRUE,
