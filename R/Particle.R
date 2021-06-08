@@ -14,7 +14,7 @@ pso <- function(value_function, num_dimensions,
 
   # Params
   w <- 1
-  max_velocity = 0.2*(max_value - max_value);
+  max_velocity = 0.2*(max_value - min_value);
   min_velocity = - max_velocity
 
 
@@ -92,6 +92,8 @@ calc_global_values <- function(particles)
 {
   particles %>%
     filter(best_cost == min(best_cost)) %>%
+    # If more than 1 have the best cost, pick the one with the lowest id...
+    filter(particle_id == min(particle_id)) %>%
     select(dimension, best_position, best_cost) %>%
     rename(global_best_position = best_position,
            global_best_cost = best_cost)
@@ -111,10 +113,10 @@ update <- function(particles, global_best, value_function, w, c1, c2, max_veloci
         c1 * r1 * (best_position - position) +         # Personal Best
         c2 * r2 * (global_best_position - position)    # Social Best
     ) %>%
-    mutate(velocity = max(min(velocity, max_value), min_velocity)) %>%
+    mutate(velocity = pmax(pmin(velocity, max_velocity), min_velocity)) %>%
     # Update the position
     mutate(position = position + velocity) %>%
-    mutate(position = max(min(position, max_velocity), min_value)) %>%
+    mutate(position = pmax(pmin(position, max_value), min_value)) %>%
     # And tidy up.
     select(-contains("global"), -r1, -r2) %>%
     mutate(iteration = iteration + 1)
