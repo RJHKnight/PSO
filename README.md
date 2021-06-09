@@ -30,3 +30,11 @@ Where *goldstein_and_price* is an inbuilt 2D Optimisation problem.
 ## Example Output
 
 The Goldstein and Price function is a non-trivial 2-D optimisation problem in the search domain of ![range](http://www.sciweavers.org/upload/Tex2Img_1623218874/render.png).
+
+The function output is as follows:
+
+![function_output](https://github.com/RJHKnight/PSO/blob/main/output/goldstein_and_price.jpg)
+
+It contains one global maxima and several local minima. 
+
+The true global minima is found at (0,1) with a value of 3.
