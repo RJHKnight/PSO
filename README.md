@@ -37,4 +37,8 @@ The function output is as follows:
 
 It contains one global maxima and several local minima. 
 
-The true global minima is found at (0,1) with a value of 3.
+The true global minima is found at (0,-1) with a value of 3.
+
+The progress of the swarm optimisation (for swarm size of 100) over the first 100 iteration is as follows:
+
+![swarm_output](https://github.com/RJHKnight/PSO/blob/main/output/optimisation_output.gif?raw=true)
