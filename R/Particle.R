@@ -25,7 +25,7 @@ pso <- function(value_function, num_dimensions,
 
   for (i in 1:num_iterations)
   {
-    particles <- update(particles, global_best, value_function, w, 2, 2, max_velocity, min_velocity, max_value, min_value)
+    particles <- update(particles, global_best, value_function, w, 2, 2, max_velocity, min_velocity, max_value, min_value, i)
     global_best <- calc_global_values(particles)
 
     if (w_damping)
@@ -63,7 +63,7 @@ get_initial_particles <- function(min_value, max_value, num_dimensions, swarm_si
     iteration = 0
   )
 
-  initial <- calculate_cost_and_update(initial, value_function)
+  initial <- calculate_cost_and_update(initial, value_function, 1)
 
   return (initial)
 }
@@ -71,11 +71,11 @@ get_initial_particles <- function(min_value, max_value, num_dimensions, swarm_si
 
 # Apply the value function to get the result of the current cost. If this cost is better than
 # the previous best, update the best columns.
-calculate_cost_and_update <- function(positions, value_function)
+calculate_cost_and_update <- function(positions, value_function, k)
 {
   current_cost <- positions %>%
     group_by(particle_id) %>%
-    summarise(current_cost = value_function(position))
+    summarise(current_cost = value_function(position, k = k))
 
   return (
     positions %>%
@@ -100,7 +100,7 @@ calc_global_values <- function(particles)
 }
 
 
-update <- function(particles, global_best, value_function, w, c1, c2, max_velocity, min_velocity, max_value, min_value)
+update <- function(particles, global_best, value_function, w, c1, c2, max_velocity, min_velocity, max_value, min_value, iteration)
 {
   particles <- particles %>%
     # Add global best
@@ -121,7 +121,7 @@ update <- function(particles, global_best, value_function, w, c1, c2, max_veloci
     select(-contains("global"), -r1, -r2) %>%
     mutate(iteration = iteration + 1)
 
-  particles <- calculate_cost_and_update(particles, value_function)
+  particles <- calculate_cost_and_update(particles, value_function, iteration)
 
   return (particles)
 }

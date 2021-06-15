@@ -9,7 +9,7 @@
 #   ungroup()
 #
 #
-# range <- seq(-2,2, by = 0.1)
+# range <- seq(0,6000, by = 100)
 # grid <- expand.grid(x = range, y = range)
 # grid$z <- apply(grid, 1, goldstein_and_price)
 # grid_z <- pivot_wider(grid, names_from = x, values_from = z) %>%
