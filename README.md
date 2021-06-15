@@ -63,6 +63,8 @@ and q is related to the constraints by:
 
 ![q](http://www.sciweavers.org/upload/Tex2Img_1623757513/eqn.png)
 
+And h(k) reprents a damping term based on the iteration number k
+
 ## Constrained Optimisation Usage
 
 I've provided a wrapper function for the calculation of H(x) given a specific (single) constraint g(x). This will provide some base implementations for theta and gamma. It can be invoked as follows:
